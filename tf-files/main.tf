@@ -22,7 +22,7 @@ resource "aws_launch_template" "asg-lt" {
   name = "phonebook-lt"
   image_id = data.aws_ami.amazon-linux-2.id
   instance_type = "t2.micro"
-  key_name = "bronze23"
+  key_name = var.key_name
   vpc_security_group_ids = [aws_security_group.server-sg.id]
   user_data = filebase64("user-data.sh")
   depends_on = [github_repository_file.dbendpoint]
@@ -106,8 +106,8 @@ resource "aws_db_instance" "db-server" {
 resource "github_repository_file" "dbendpoint" {
   content = aws_db_instance.db-server.address
   file = "dbserver.endpoint"
-  repository = "phonebook"
+  repository = var.repository
   overwrite_on_create = true
-  branch = "main"
+  branch = var.git_branch
 }
 
