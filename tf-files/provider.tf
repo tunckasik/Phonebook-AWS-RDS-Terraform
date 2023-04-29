@@ -19,5 +19,5 @@ provider "aws" {
 }
 
 provider "github" {
-  token = var.github_token
+   token = file("${var.github_token_path}/${var.github_token_filename}")
 }

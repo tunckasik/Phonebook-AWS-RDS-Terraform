@@ -14,7 +14,7 @@ data "aws_ami" "amazon-linux-2" {
   most_recent = true
   filter {
     name = "name"
-    values = ["amzn2-ami-kernel-5.10*"]
+    values = ["amzn2-ami-hvm*"]
   }
 }
 
@@ -22,10 +22,12 @@ resource "aws_launch_template" "asg-lt" {
   name = "phonebook-lt"
   image_id = data.aws_ami.amazon-linux-2.id
   instance_type = "t2.micro"
-  key_name = var.key_name
+  key_name = "mat-ec2-key"
   vpc_security_group_ids = [aws_security_group.server-sg.id]
-  user_data = filebase64("user-data.sh")
-  depends_on = [github_repository_file.dbendpoint]
+  user_data = base64encode(templatefile("${path.module}/user-data.sh", {github_repo_name = var.github_repo_name} ))
+  depends_on = [
+    github_repository_file.dbendpoint
+  ]
   tag_specifications {
     resource_type = "instance"
     tags = {
@@ -90,11 +92,11 @@ resource "aws_db_instance" "db-server" {
   auto_minor_version_upgrade = true
   backup_retention_period = 0
   identifier = "phonebook-app-db"
-  name = "phonebook"
+  name = var.db_name
   engine = "mysql"
   engine_version = "8.0.23"
-  username = "admin"
-  password = "Bronze_1"
+  username = var.db_username
+  password = var.db_password
   monitoring_interval = 0
   multi_az = false
   port = 3306
@@ -106,8 +108,7 @@ resource "aws_db_instance" "db-server" {
 resource "github_repository_file" "dbendpoint" {
   content = aws_db_instance.db-server.address
   file = "dbserver.endpoint"
-  repository = var.repository
+  repository = var.github_repo_name
   overwrite_on_create = true
-  branch = var.git_branch
+  branch = "main"
 }
-
