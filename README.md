@@ -1,13 +1,13 @@
 ## Phonebook App Deployment on AWS
 
-This repository contains the Terraform code to deploy a Phonebook App on AWS. The application is composed of an Amazon RDS instance running MySQL, an Auto Scaling Group of EC2 instances running the Phonebook App, and an Application Load Balancer that routes incoming traffic to the EC2 instances.
+This repository contains the Terraform code to deploy a Phonebook App (a web application with Flask) on AWS. The application is composed of an Amazon RDS instance running MySQL, an Auto Scaling Group of EC2 instances running the Phonebook App and an Application Load Balancer that routes incoming traffic to the EC2 instances.
 
 **Prerequisites**
 Before deploying this application, you must have the following:
 
 - An AWS account with appropriate permissions to create the necessary resources
 - Terraform installed on your local machine
-- A GitHub account
+- A GitHub account and its token
 
 **Deployment**
 To deploy this application, follow these steps:
@@ -29,3 +29,7 @@ To deploy this application, follow these steps:
 - `outputs.tf`: This file contains the output values that are displayed after running terraform apply.
 - `provider.tf`: This file contains the provider configuration for AWS.
 - `sec-gr.tf`: This file contains the security group rules for the EC2 instances.
+ ## Notes
+
+ Application needs the endpoint of the `dbserver`. We are using Terraform to create a file on GitHub and reading the `dbserver endpoint` from this file within the application.
+We are providing the `repo name` to the `user-data.sh` file dynamically.
